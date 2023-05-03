@@ -1,5 +1,6 @@
+local table = require("__flib__/table")
+
 local constants = require("__the418_entity_scanner__/constants")
-local gui = require("__the418_entity_scanner__/scripts/gui/scanner/gui")
 
 local templates = {}
 
@@ -7,13 +8,18 @@ local templates = {}
 --- @field the418_entity_scanner__scanner_window LuaGuiElement
 --- @field titlebar_flow LuaGuiElement
 --- @field pin_button LuaGuiElement
+--- @field filter_slot_container LuaGuiElement
+--- @field filter_slot_table LuaGuiElement
+--- @field empty_filter_slot LuaGuiElement
 
+--- @param gui ScannerGui
+--- @param data ScannerGuiData
 --- @return ScannerGuiElems
-function templates.render()
+function templates.render(gui, data)
   return {
     type = "frame",
     name = "the418_entity_scanner__scanner_window",
-    style_mods = { height = constants.gui.scanner.height },
+    style_mods = { width = constants.gui.scanner.width, height = constants.gui.scanner.height },
     direction = "vertical",
     ref = { "window" },
     visible = false,
@@ -28,6 +34,7 @@ function templates.render()
       style_mods = {
         horizontal_spacing = 8,
       },
+      drag_target = "the418_entity_scanner__scanner_window",
       {
         type = "label",
         style = "frame_title",
@@ -68,9 +75,67 @@ function templates.render()
       direction = "horizontal",
       {
         type = "frame",
-        style = "inside_shallow_frame",
+        style = "inside_shallow_frame_with_padding",
         direction = "vertical",
+        {
+          type = "frame",
+          name = "filter_slot_container",
+          direction = "vertical",
+          style = "filter_scroll_pane_background_frame",
+          style_mods = {
+            horizontally_stretchable = "on",
+            vertically_stretchable = "on",
+            width = 200,
+          },
+          {
+            type = "table",
+            name = "filter_slot_table",
+            style = "filter_slot_table",
+            column_count = 10,
+            table.unpack(templates.entity_filter_slot_buttons(gui, data)),
+          },
+        },
       },
+    },
+  }
+end
+
+--- @param gui ScannerGui
+--- @param data ScannerGuiData
+--- @return LuaGuiElement[]
+function templates.entity_filter_slot_buttons(gui, data)
+  local buttons = {}
+
+  for _, entity_name in pairs(data.player_table.entity_filters) do
+    table.insert(buttons, templates.entity_filter_slot_button(gui, data, entity_name))
+  end
+
+  table.insert(buttons, templates.entity_filter_slot_button(gui, data))
+
+  return buttons
+end
+
+--- @param gui ScannerGui
+--- @param data ScannerGuiData
+--- @param entity_name string?
+--- @return LuaGuiElement
+function templates.entity_filter_slot_button(gui, data, entity_name)
+  local used_entity_names = data.player_table.entity_filters
+  local filtered_entity_names = entity_name
+      and table.filter(used_entity_names, function(name)
+        return name ~= entity_name
+      end, true)
+    or used_entity_names
+
+  return {
+    type = "choose-elem-button",
+    style = "slot_button",
+    elem_type = "entity",
+    elem_value = entity_name,
+    entity = entity_name or nil,
+    elem_filters = { { filter = "name", name = filtered_entity_names, invert = true } },
+    handler = {
+      [defines.events.on_gui_elem_changed] = gui.on_filter_slot_changed,
     },
   }
 end

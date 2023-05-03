@@ -69,4 +69,19 @@ function scanner_gui.on_pin_click(data)
   scanner_gui.toggle_pinned(data)
 end
 
+--- @param data ScannerGuiData
+--- @param event EventData.on_gui_elem_changed
+function scanner_gui.on_filter_slot_changed(data, event)
+  local entity_name = event.element.elem_value --[[@as string?]]
+  local index = event.element.get_index_in_parent()
+
+  if entity_name then
+    data.player_table.entity_filters[index] = entity_name
+  else
+    table.remove(data.player_table.entity_filters, index)
+  end
+
+  updates.redraw_entity_filters(scanner_gui, data)
+end
+
 return scanner_gui

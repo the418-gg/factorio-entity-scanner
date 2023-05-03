@@ -2,7 +2,8 @@ local constants = {}
 
 constants.gui = {
   scanner = {
-    height = 800,
+    width = 250,
+    height = 400,
   },
 }
 

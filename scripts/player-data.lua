@@ -9,6 +9,8 @@ function player_data.init(player)
   global.players[player.index] = {
     --- @type PlayerGuis
     guis = {},
+    --- @type string[]
+    entity_filters = {},
   }
 end
 
@@ -20,11 +22,6 @@ function player_data.refresh(player, player_table)
     scanner_gui.destroy(scanner_gui_data)
   end
   scanner_gui_index.new(player, player_table)
-end
-
---- @param player_table PlayerTable
-function player_data.load(player_table)
-  scanner_gui_index.load(player_table.guis.scanner)
 end
 
 --- @class PlayerGuis

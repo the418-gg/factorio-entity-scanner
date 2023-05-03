@@ -20,11 +20,11 @@ script.on_init(function()
   migrations.generic()
 end)
 
-script.on_load(function()
-  for _, player_table in pairs(global.players) do
-    player_data.load(player_table)
-  end
-end)
+-- script.on_load(function()
+--   for _, player_table in pairs(global.players) do
+--     -- player_data.load(player_table)
+--   end
+-- end)
 
 script.on_configuration_changed(function(event)
   if event.migration_applied then
