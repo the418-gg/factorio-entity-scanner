@@ -10,7 +10,6 @@ constants.gui = {
 constants.scanner = {
   chunks_per_task = 1,
   task_interval = 15, -- ticks
-  chunk_size = 16,
 }
 
 return constants

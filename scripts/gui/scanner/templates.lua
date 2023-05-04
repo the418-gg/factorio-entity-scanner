@@ -118,13 +118,13 @@ function templates.render(gui, data)
             },
           },
           {
-            type = "empty-widget",
-            style = "flib_vertical_pusher",
-          },
-          {
             type = "flow",
             name = "scan_status_container",
             templates.scan_status(gui, data),
+          },
+          {
+            type = "empty-widget",
+            style = "flib_vertical_pusher",
           },
           {
             type = "label",
