@@ -24,4 +24,26 @@ function updates.redraw_entity_filters(gui, data)
   flib_gui.add(data.elems.filter_slot_table, templates.entity_filter_slot_buttons(gui, data))
 end
 
+--- @param gui ScannerGui
+--- @param data ScannerGuiData
+function updates.redraw_scan_results(gui, data)
+  data.elems.results.clear()
+  flib_gui.add(data.elems.results, templates.scan_results(gui, data))
+end
+
+--- @param gui ScannerGui
+--- @param data ScannerGuiData
+function updates.redraw_scan_status(gui, data)
+  data.elems.scan_status_container.clear()
+  flib_gui.add(data.elems.scan_status_container, templates.scan_status(gui, data))
+
+  if data.player_table.scan_status.status == "in_progress" then
+    data.elems.action_button.style = "the418_entity_scanner__red_dialog_button"
+    data.elems.action_button.caption = { "gui.the418-entity-scanner--scanner-button-scan-off" }
+  else
+    data.elems.action_button.style = "the418_entity_scanner__green_dialog_button"
+    data.elems.action_button.caption = { "gui.the418-entity-scanner--scanner-button-scan-on" }
+  end
+end
+
 return updates

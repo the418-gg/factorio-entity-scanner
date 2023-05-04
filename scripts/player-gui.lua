@@ -2,8 +2,19 @@ local flib_gui = require("__flib__/gui-lite")
 
 local player_data = require("__the418_entity_scanner__/scripts/player-data")
 local scanner_gui = require("__the418_entity_scanner__/scripts/gui/scanner/gui")
+local scanner_gui_index = require("__the418_entity_scanner__/scripts/gui/scanner/index")
 
 local player_gui = {}
+
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+function player_gui.refresh(player, player_table)
+  local scanner_gui_data = player_table.guis.scanner
+  if scanner_gui_data then
+    scanner_gui.destroy(scanner_gui_data)
+  end
+  scanner_gui_index.new(player, player_table)
+end
 
 --- @param player_index uint
 --- @param gui_name "scanner"
@@ -29,6 +40,14 @@ function player_gui.toggle_interface(player_index)
       local player_table = global.players[player_index]
       player_data.refresh(player, player_table)
     end
+  end
+end
+
+--- @param player_index uint
+function player_gui.update_scan_status(player_index)
+  local scanner_gui_data = player_gui.get_gui_data(player_index, "scanner")
+  if scanner_gui_data then
+    scanner_gui.update_scan_status(scanner_gui_data)
   end
 end
 

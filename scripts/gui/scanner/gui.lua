@@ -1,3 +1,4 @@
+local scanner = require("__the418_entity_scanner__/scripts/scanner")
 local updates = require("__the418_entity_scanner__/scripts/gui/scanner/updates")
 
 --- @class ScannerGui
@@ -57,6 +58,13 @@ function scanner_gui.toggle_pinned(data)
   updates.set_frame_action_button_active(data.elems.pin_button, "flib_pin", data.state.is_pinned)
 end
 
+--- @param data ScannerGuiData
+function scanner_gui.update_scan_status(data)
+  updates.redraw_scan_status(scanner_gui, data)
+  -- TODO don't redraw all results every time!
+  updates.redraw_scan_results(scanner_gui, data)
+end
+
 -- HANDLERS
 
 --- @param data ScannerGuiData
@@ -82,6 +90,50 @@ function scanner_gui.on_filter_slot_changed(data, event)
   end
 
   updates.redraw_entity_filters(scanner_gui, data)
+end
+
+--- @param data ScannerGuiData
+function scanner_gui.on_scan_click(data)
+  if data.player_table.scan_status.status == "in_progress" then
+    scanner.stop(data.player_table.scan_status.task_id)
+    data.player_table.scan_status.task_id = nil
+    data.player_table.scan_status.status = "not_started"
+    scanner_gui.update_scan_status(data)
+  else
+    scanner.begin_scan(data.player, data.player_table.entity_filters)
+    updates.redraw_scan_status(scanner_gui, data)
+  end
+
+  updates.redraw_entity_filters(scanner_gui, data)
+end
+
+--- @param data ScannerGuiData
+--- @param event EventData.on_gui_click
+function scanner_gui.on_result_click(data, event)
+  local tags = event.element.tags
+  if not tags.the418_entity_scanner then
+    return
+  end
+
+  local surface_index = tags.the418_entity_scanner.surface_index
+  local entity_index = tags.the418_entity_scanner.entity_index
+  local results = data.player_table.scan_status.results
+
+  if not results then
+    return
+  end
+
+  local ent = results.surfaces[surface_index][entity_index]
+
+  data.player.print(
+    "[entity="
+      .. ent.entity_name
+      .. "] [gps="
+      .. ent.map_position.x
+      .. ","
+      .. ent.map_position.y
+      .. "]"
+  )
 end
 
 return scanner_gui

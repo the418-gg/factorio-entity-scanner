@@ -1,6 +1,3 @@
-local scanner_gui_index = require("__the418_entity_scanner__/scripts/gui/scanner/index")
-local scanner_gui = require("__the418_entity_scanner__/scripts/gui/scanner/gui")
-
 local player_data = {}
 
 --- @param player LuaPlayer
@@ -11,17 +8,23 @@ function player_data.init(player)
     guis = {},
     --- @type string[]
     entity_filters = {},
+    --- @type ScanStatus
+    scan_status = {
+      task_id = nil,
+      status = "not_started",
+      surface_name = nil,
+      entities_found = 0,
+      scan_duration = 0,
+      results = nil,
+    },
   }
 end
 
 --- @param player LuaPlayer
---- @param player_table PlayerTable
-function player_data.refresh(player, player_table)
-  local scanner_gui_data = player_table.guis.scanner
-  if scanner_gui_data then
-    scanner_gui.destroy(scanner_gui_data)
-  end
-  scanner_gui_index.new(player, player_table)
+--- @param index uint
+--- @param entity_name string
+function player_data.set_entity_filter(player, index, entity_name)
+  global.players[player.index].entity_filters[index] = entity_name
 end
 
 --- @class PlayerGuis

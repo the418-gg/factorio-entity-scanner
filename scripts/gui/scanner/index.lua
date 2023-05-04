@@ -18,6 +18,7 @@ function index.new(player, player_table)
     state = {
       is_visible = false,
       is_pinned = false,
+      -- selected_surface = nil, --- @type ({ index: uint, name: string })?
     },
   }
 

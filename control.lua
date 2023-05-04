@@ -4,6 +4,7 @@ local on_tick_n = require("__flib__/on-tick-n")
 local player_data = require("__the418_entity_scanner__/scripts/player-data")
 local player_gui = require("__the418_entity_scanner__/scripts/player-gui")
 local migrations = require("__the418_entity_scanner__/scripts/migrations")
+local scanner = require("__the418_entity_scanner__/scripts/scanner")
 
 script.on_init(function()
   on_tick_n.init()
@@ -20,12 +21,6 @@ script.on_init(function()
   migrations.generic()
 end)
 
--- script.on_load(function()
---   for _, player_table in pairs(global.players) do
---     -- player_data.load(player_table)
---   end
--- end)
-
 script.on_configuration_changed(function(event)
   if event.migration_applied then
     migrations.generic()
@@ -35,7 +30,7 @@ end)
 script.on_event(defines.events.on_player_created, function(event)
   local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
   player_data.init(player)
-  player_data.refresh(player, global.players[event.player_index])
+  player_gui.refresh(player, global.players[event.player_index])
 end)
 
 script.on_event(defines.events.on_player_removed, function(event)
@@ -47,7 +42,10 @@ script.on_event(defines.events.on_tick, function(event)
 
   if tasks then
     for _, task in pairs(tasks) do
-      -- TODO
+      if task.type == "scan" then
+        scanner.perform(task)
+        player_gui.update_scan_status(task.player_index)
+      end
     end
   end
 end)
